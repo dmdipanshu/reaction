@@ -10,7 +10,18 @@ from hydrogram.enums import ChatType
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        # 1. Verify Authorization Header (if CRON_SECRET is set)
+        from urllib.parse import urlparse
+        parsed_path = urlparse(self.path)
+        
+        # 1. Handle non-cron requests (e.g. /, /favicon.ico)
+        if parsed_path.path != "/api/cron":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps({"status": "active"}).encode("utf-8"))
+            return
+
+        # 2. Verify Authorization Header (if CRON_SECRET is set)
         cron_secret = os.getenv("CRON_SECRET")
         if cron_secret:
             # Case-insensitive header lookup (handles standard dict, HTTPMessage, etc.)
