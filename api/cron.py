@@ -13,7 +13,8 @@ class handler(BaseHTTPRequestHandler):
         # 1. Verify Authorization Header (if CRON_SECRET is set)
         cron_secret = os.getenv("CRON_SECRET")
         if cron_secret:
-            auth_header = self.headers.get("Authorization")
+            # Case-insensitive header lookup (handles standard dict, HTTPMessage, etc.)
+            auth_header = next((v for k, v in self.headers.items() if k.lower() == "authorization"), None)
             if not auth_header or auth_header != f"Bearer {cron_secret}":
                 self.send_response(401)
                 self.send_header("Content-Type", "application/json")
