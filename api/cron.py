@@ -15,6 +15,13 @@ class handler(BaseHTTPRequestHandler):
         if cron_secret:
             # Case-insensitive header lookup (handles standard dict, HTTPMessage, etc.)
             auth_header = next((v for k, v in self.headers.items() if k.lower() == "authorization"), None)
+            
+            # Safe debug logging to Vercel console
+            masked_secret = f"{cron_secret[:3]}...{cron_secret[-3:]}" if len(cron_secret) > 6 else "***"
+            masked_header = f"{auth_header[:15]}...{auth_header[-3:]}" if auth_header and len(auth_header) > 18 else ("Present" if auth_header else "None")
+            print(f"[DEBUG] CRON_SECRET: {masked_secret} (len: {len(cron_secret)})")
+            print(f"[DEBUG] Authorization Header: {masked_header}")
+            
             if not auth_header or auth_header != f"Bearer {cron_secret}":
                 self.send_response(401)
                 self.send_header("Content-Type", "application/json")
