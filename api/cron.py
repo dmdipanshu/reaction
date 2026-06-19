@@ -113,11 +113,8 @@ class handler(BaseHTTPRequestHandler):
                         msg_date = msg_date.replace(tzinfo=timezone.utc)
                     
                     elapsed = (now - msg_date).total_seconds()
-                    # 35 minutes = 2100 seconds
                     if elapsed > 2100:
-                        # Since dialogs are ordered by date descending, any subsequent dialog will be even older.
-                        print(f"Skipping group {dialog.chat.title} (inactive for {elapsed/60:.1f} minutes). Stopping scan.")
-                        break
+                        continue
 
                 groups_processed += 1
                 print(f"Processing group: {dialog.chat.title} (ID: {dialog.chat.id})")
