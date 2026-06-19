@@ -1,2 +1,9 @@
+[project]
+name = "auto-reaction"
+version = "0.1.0"
+dependencies = [
+    "hydrogram"
+]
+
 [tool.vercel]
 entrypoint = "api.cron:handler"
